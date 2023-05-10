@@ -54,7 +54,7 @@ pub fn posterization(gray: ImageBuffer<Luma<u8>, Vec<u8>>, quantization_number: 
     let width = gray.width();
     let height = gray.height();
 
-    let color = 255 / quantization_number;
+    let level = 255 / quantization_number;
 
     let mut img = GrayImage::new(width, height);
     img.enumerate_pixels_mut()
@@ -62,7 +62,7 @@ pub fn posterization(gray: ImageBuffer<Luma<u8>, Vec<u8>>, quantization_number: 
     .par_iter_mut()
     .for_each(|(x, y, pixel)| {
         let val = gray.get_pixel(*x, *y);
-        pixel[0] = ((val[0] / color) * color + (color / 2)) as u8;
+        pixel[0] = ((val[0] / level) * level + (level / 2)) as u8;
     });
     img
 }
