@@ -1,0 +1,3 @@
+/target
+/img/output/*
+!/img/output/.gitkeep
