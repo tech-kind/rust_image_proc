@@ -1,4 +1,4 @@
-use image::{Rgb, ImageBuffer, GrayImage, Luma};
+use image::{Rgb, ImageBuffer, GrayImage, Luma, RgbImage};
 use rayon::prelude::*;
 
 #[allow(dead_code)]
@@ -9,7 +9,29 @@ pub enum Channel {
 }
 
 #[allow(dead_code)]
-pub fn get_channel_image(rgb: ImageBuffer<Rgb<u8>, Vec<u8>>, channel: Channel)
+pub fn compose_channel(r: ImageBuffer<Luma<u8>, Vec<u8>>,
+    g: ImageBuffer<Luma<u8>, Vec<u8>>, b: ImageBuffer<Luma<u8>, Vec<u8>>)
+    -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+    let width = r.width();
+    let height = r.height();
+
+    let mut img = RgbImage::new(width, height);
+    img.enumerate_pixels_mut()
+        .collect::<Vec<(u32, u32, &mut Rgb<u8>)>>()
+        .par_iter_mut()
+        .for_each(|(x, y, pixel)| {
+            let val_r = r.get_pixel(*x, *y);
+            let val_g = g.get_pixel(*x, *y);
+            let val_b = b.get_pixel(*x, *y);
+            pixel[0] = val_r[0];
+            pixel[1] = val_g[0];
+            pixel[2] = val_b[0];
+        });
+    img
+}
+
+#[allow(dead_code)]
+pub fn decompose_channel(rgb: ImageBuffer<Rgb<u8>, Vec<u8>>, channel: Channel)
     -> ImageBuffer<Luma<u8>, Vec<u8>> {
     let width = rgb.width();
     let height = rgb.height();
